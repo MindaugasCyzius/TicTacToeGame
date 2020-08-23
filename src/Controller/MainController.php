@@ -19,6 +19,7 @@ class MainController extends AbstractController
     const USER_WON_MESSAGE = 'Player won!';
     const CPU_WON_MESSAGE = 'CPU won!';
     const DRAW_MESSAGE = 'It is a draw!';
+    const TITLE = 'TicTacToe Game!';
 
     /**
      * @Route("/")
@@ -33,34 +34,38 @@ class MainController extends AbstractController
         
         $gameState = $session->get('gameState', null);
         $state = new State($gameState);
+        $gameOver = false;
 
         if ($request->isMethod(Request::METHOD_POST)) {
             $position = $request->request->get('pos');
             $row = substr($position, 0,1);
             $column = substr($position, 1,1);
             $changeAction = new ChangeAction($row, $column,self::USER_VALUE);
-
             try {
                 $state->change($changeAction);
             } catch (TicTacToeException $exception) {
                 $errorMessage = $exception->getMessage();
             }
 
-            if (StateChecker::hasValidMoves($state->getGrid()) > 0) {
-                $cpuMoveGenerator = new CPUMoveGenerator();
-                $state->change($cpuMoveGenerator->generate($state->getGrid()));
+            if(!(StateChecker::hasPlayerWon($state->getGrid()))) {
+                if (StateChecker::hasValidMoves($state->getGrid()) > 0) {
+                    $cpuMoveGenerator = new CPUMoveGenerator();
+                    $state->change($cpuMoveGenerator->generate($state->getGrid()));
+                }
+            } else {
+                $gameOver = true;
+                $message = self::USER_WON_MESSAGE;
             }
 
             $session->set('gameState', $state->serialize());
         }
 
-        if (StateChecker::hasPlayerWon($state->getGrid())) {
-            $message = self::USER_WON_MESSAGE;
-        }
         if (StateChecker::hasCPUWon($state->getGrid())) {
+            $gameOver = true;
             $message = self::CPU_WON_MESSAGE;
         }
         if (StateChecker::hasValidMoves($state->getGrid()) == 0) {
+            $gameOver = true;
             $message = self::DRAW_MESSAGE;
         }
 
@@ -73,6 +78,8 @@ class MainController extends AbstractController
                 'userWinMessage' => self::USER_WON_MESSAGE,
                 'cpuWinMessage' => self::CPU_WON_MESSAGE,
                 'drawMessage' => self::DRAW_MESSAGE,
+                'gameOver' => $gameOver,
+                'title' => self::TITLE,
             ]
         );
     }

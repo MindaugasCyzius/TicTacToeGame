@@ -7,7 +7,7 @@
         <h2>{{ errorMessage }}</h2>
     {% endif %}
     <div class="container">
-        <h1>TicTacToe Game!</h1>
+        <h1>{{ title }}</h1>
         {% if message %}
             <div>
                 <h1 class="
@@ -29,9 +29,11 @@
                                 value="{{ rowKey }}{{ columnKey }}"
                                 type="submit"
                                 {% if symbol %}
-                                disabled class="occupied"
+                                    disabled class="occupied"
+                                {% elseif gameOver %}
+                                    disabled class="occupied"
                                 {% else %}
-                                class="block"
+                                    class="block"
                                 {% endif %}>{{ symbol }}</button>
                     {% endfor %}
                 {% endfor %}
