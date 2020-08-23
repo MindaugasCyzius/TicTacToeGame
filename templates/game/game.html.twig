@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} TicTacToe Game {% endblock %}
+
+{% block body %}
+    {% if errorMessage %}
+        <h2>{{ errorMessage }}</h2>
+    {% endif %}
+    <div class="container">
+        <h1>TicTacToe Game!</h1>
+        {% if message %}
+            <div>
+                <h1 class="
+                    {% if message == userWinMessage %}
+                player-won
+                    {% elseif message == cpuWinMessage %}
+                cpu-won
+                    {% else %}
+                draw
+                    {% endif %}">{{ message }}</h1>
+            </div>
+        {% endif %}
+        <form method="post">
+            <div class="play-area">
+                {% for rowKey, row in grid %}
+                    {% for columnKey, symbol in row %}
+                        <button id="block_{{ rowKey }}{{ columnKey }}"
+                                name="pos"
+                                value="{{ rowKey }}{{ columnKey }}"
+                                type="submit"
+                                {% if symbol %}
+                                disabled class="occupied"
+                                {% else %}
+                                class="block"
+                                {% endif %}>{{ symbol }}</button>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </form>
+
+        <form method="get"
+              action="/restart">
+            <div class="restart">
+                <button type="submit"
+                        class="restart-button">Restart
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
