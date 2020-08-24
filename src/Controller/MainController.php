@@ -31,23 +31,23 @@ class MainController extends AbstractController
     {
         /** @var Session $session */
         $session = $this->get('session');
-        
+
         $gameState = $session->get('gameState', null);
         $state = new State($gameState);
         $gameOver = false;
 
         if ($request->isMethod(Request::METHOD_POST)) {
             $position = $request->request->get('pos');
-            $row = substr($position, 0,1);
-            $column = substr($position, 1,1);
-            $changeAction = new ChangeAction($row, $column,self::USER_VALUE);
+            $row = substr($position, 0, 1);
+            $column = substr($position, 1, 1);
+            $changeAction = new ChangeAction($row, $column, self::USER_VALUE);
             try {
                 $state->change($changeAction);
             } catch (TicTacToeException $exception) {
                 $errorMessage = $exception->getMessage();
             }
 
-            if(!(StateChecker::hasPlayerWon($state->getGrid()))) {
+            if (!(StateChecker::hasPlayerWon($state->getGrid()))) {
                 if (StateChecker::hasValidMoves($state->getGrid()) > 0) {
                     $cpuMoveGenerator = new CPUMoveGenerator();
                     $state->change($cpuMoveGenerator->generate($state->getGrid()));
@@ -64,9 +64,11 @@ class MainController extends AbstractController
             $gameOver = true;
             $message = self::CPU_WON_MESSAGE;
         }
-        if (StateChecker::hasValidMoves($state->getGrid()) == 0) {
-            $gameOver = true;
-            $message = self::DRAW_MESSAGE;
+        if (!(StateChecker::hasPlayerWon($state->getGrid()))) {
+            if (StateChecker::hasValidMoves($state->getGrid()) == 0) {
+                $gameOver = true;
+                $message = self::DRAW_MESSAGE;
+            }
         }
 
         return $this -> render(
