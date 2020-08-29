@@ -18,44 +18,64 @@ class StateChecker
         [[2,0], [1,1], [0,2]],
     ];
 
+/*    private static $winScenarios = [
+        // Rows
+        [[0,0], [0,1]],
+        [[1,0], [1,1]],
+        // Columns
+        [[0,0], [1,0]],
+        [[0,1], [1,1]],
+        // Diagonal
+        [[0,0], [1,1]],
+        [[0,1], [1,0]],
+    ];*/
+
+    public static function hasAnyoneWon(array $grid): bool
+    {
+        if (self::check($grid, 'X') || self::check($grid, 'O')) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static function playerWon(array $data): bool
+    {
+        return self::check($data, 'X');
+    }
+
+    public static function cpuWon(array $data): bool
+    {
+        return self::check($data, 'O');
+    }
+
     public static function hasPlayerWon(Grid $grid): bool
     {
-        return self::check($grid, 'X');
+        $data = $grid->serialize();
+        return self::check($data, 'X');
     }
 
     public static function hasCPUWon(Grid $grid): bool
     {
-        return self::check($grid, 'O');
-    }
-
-    public static function hasValidMoves(Grid $grid): int
-    {
         $data = $grid->serialize();
-        foreach ($data as $key => $row) {
-            $data[$key] = array_reduce(
-                $row,
-                function ($sum, $item) {
-                    return $sum += $item ? 1 : 0;
-                },
-                0
-            );
-        }
-
-        $total = array_reduce(
-            $data,
-            function ($sum, $item) {
-                return $sum += $item ? $item : 0;
-            },
-            0
-        );
-
-        return Grid::GRID_ROWS * Grid::GRID_COLUMNS - $total;
+        return self::check($data, 'O');
     }
 
-    private static function check(Grid $grid, string $symbol): bool
+    /**
+     * Check if there is any available position.
+     * @param array $data
+     * @return bool
+     */
+    public static function noMoreMoves(array $data)
     {
-       $data = $grid->serialize();
+        $availablePositions = array_filter($data, function ($position) {
+            return in_array("", $position);
+        });
+        return !$availablePositions;
+    }
 
+    private static function check(Array $data, string $symbol): bool
+    {
        foreach (self::$winScenarios as $winScenario) {
            $counter = 0;
            foreach ($winScenario as $position) {
