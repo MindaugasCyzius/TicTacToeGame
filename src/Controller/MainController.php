@@ -33,12 +33,6 @@ class MainController extends AbstractController
         $session = $this->get('session');
 
         $gameState = $session->get('gameState', null);
-/*        $gameState = [
-            ['X', '', ''],
-            ['', 'O', ''],
-            ['', '', ''],
-        ];
-        $session->set('gameState', $gameState);*/
         $state = new State($gameState);
         $gameOver = false;
 
@@ -53,7 +47,7 @@ class MainController extends AbstractController
                 $errorMessage = $exception->getMessage();
             }
 
-            if (!(StateChecker::hasPlayerWon($state->getGrid()))) {
+            if (!(StateChecker::playerWon($state->getGrid()->serialize()))) {
                 if (!StateChecker::noMoreMoves($state->getGrid()->serialize())) {
                     $cpuMoveGenerator = new CPUMoveGenerator();
                     $state->change($cpuMoveGenerator->generate($state->getGrid()));
@@ -66,16 +60,14 @@ class MainController extends AbstractController
             $session->set('gameState', $state->serialize());
         }
 
-        if (StateChecker::hasCPUWon($state->getGrid())) {
+        if (StateChecker::cpuWon($state->getGrid()->serialize())) {
             $gameOver = true;
             $message = self::CPU_WON_MESSAGE;
         }
-        if (!(StateChecker::hasPlayerWon($state->getGrid()))) {
             if (StateChecker::noMoreMoves($state->getGrid()->serialize())) {
                 $gameOver = true;
                 $message = self::DRAW_MESSAGE;
             }
-        }
 
         return $this -> render(
             'game/game.html.twig',
