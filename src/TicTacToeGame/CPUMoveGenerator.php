@@ -14,12 +14,12 @@ class CPUMoveGenerator
         //win game
         for ($i = 0; $i < Grid::GRID_COLUMNS; $i++) {
             for ($j = 0; $j < Grid::GRID_ROWS; $j++) {
-                if ($data[$i][$j] == '') {
-                    $data[$i][$j] = 'O';
+                if ($data[$i][$j] == ChangeAction::EMPTY_VALUE) {
+                    $data[$i][$j] = ChangeAction::CPU_VALUE;
                     if (StateChecker::cpuWon($data)) {
-                        return new ChangeAction($i, $j, 'O');
+                        return new ChangeAction($i, $j, ChangeAction::CPU_VALUE);
                     }
-                    $data[$i][$j] = '';
+                    $data[$i][$j] = ChangeAction::EMPTY_VALUE;
                 }
             }
         }
@@ -27,31 +27,31 @@ class CPUMoveGenerator
         // Prevent losing action
         for ($i = 0; $i < Grid::GRID_COLUMNS; $i++) {
             for ($j = 0; $j < Grid::GRID_ROWS; $j++) {
-                if ($data[$i][$j] == '') {
-                    $data[$i][$j] = 'X';
+                if ($data[$i][$j] == ChangeAction::EMPTY_VALUE) {
+                    $data[$i][$j] = ChangeAction::USER_VALUE;
                     if (StateChecker::playerWon($data)) {
-                        return new ChangeAction($i, $j, 'O');
+                        return new ChangeAction($i, $j, ChangeAction::CPU_VALUE);
                     }
-                    $data[$i][$j] = '';
+                    $data[$i][$j] = ChangeAction::EMPTY_VALUE;
                 }
             }
         }
 
         // Take best position
         if ($data[1][1] == '') {
-            return new ChangeAction(1,1, 'O');
+            return new ChangeAction(1,1, ChangeAction::CPU_VALUE);
         }
 
         //Initialize algorithm for other cases
         for ($i = 0; $i < Grid::GRID_COLUMNS; $i++) {
             for ($j = 0; $j < Grid::GRID_ROWS; $j++) {
-                if ($data[$i][$j] == '') {
+                if ($data[$i][$j] == ChangeAction::EMPTY_VALUE) {
                     // make the move
-                    $data[$i][$j] = 'O';
+                    $data[$i][$j] = ChangeAction::CPU_VALUE;
                     // compute evaluation function for this move.
                     $moveValue = $this->miniMax($data, 1, true);
                     // undo the move
-                    $data[$i][$j] = '';
+                    $data[$i][$j] = ChangeAction::EMPTY_VALUE;
                     if ($moveValue >= $bestValue) {
                         $bestValue = $moveValue;
                         $bestMove = [$i, $j];
@@ -64,7 +64,7 @@ class CPUMoveGenerator
     }
 
     /**
-     * Implements minimax Algorithm in order to minimize the possible loss of the bot.
+     * Implements miniMax Algorithm in order to minimize the possible loss of the bot.
      * @param array $data
      * @param int $level
      * @param bool $isBotTeam
@@ -88,12 +88,12 @@ class CPUMoveGenerator
             $bestMove = -1;
             for ($i = 0; $i < Grid::GRID_ROWS; $i++) {
                 for ($j = 0; $j < Grid::GRID_COLUMNS; $j++) {
-                    if ($data[$i][$j] == '') {
+                    if ($data[$i][$j] == ChangeAction::EMPTY_VALUE) {
                         // make the move
-                        $data[$i][$j] = 'X';
+                        $data[$i][$j] = ChangeAction::USER_VALUE;
                         $score = $this->miniMax($data, $level + 1, !$isBotTeam);
-                        // call minimax recursively and choose the maximum value
-                        $data[$i][$j] = '';
+                        // call miniMax recursively and choose the maximum value
+                        $data[$i][$j] = ChangeAction::EMPTY_VALUE;
                         $bestMove = max($score, $bestMove);
                     }
                 }
@@ -104,13 +104,13 @@ class CPUMoveGenerator
             $bestMove = 1;
             for ($i = 0; $i < Grid::GRID_ROWS; $i++) {
                 for ($j = 0; $j < Grid::GRID_COLUMNS; $j++) {
-                    if ($data[$i][$j] == '') {
+                    if ($data[$i][$j] == ChangeAction::EMPTY_VALUE) {
                         // make move
-                        $data[$i][$j] = 'O';
+                        $data[$i][$j] = ChangeAction::CPU_VALUE;
                         $score = $this->miniMax($data, $level + 1, !$isBotTeam);
                         $bestMove = min($score, $bestMove);
                         // undo the move
-                        $data[$i][$j] = '';
+                        $data[$i][$j] = ChangeAction::EMPTY_VALUE;
                     }
                 }
             }

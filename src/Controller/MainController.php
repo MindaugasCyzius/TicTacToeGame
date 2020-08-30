@@ -15,7 +15,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class MainController extends AbstractController
 {
-    const USER_VALUE = 'X';
     const USER_WON_MESSAGE = 'Player won!';
     const CPU_WON_MESSAGE = 'CPU won!';
     const DRAW_MESSAGE = 'It is a draw!';
@@ -40,7 +39,7 @@ class MainController extends AbstractController
             $position = $request->request->get('pos');
             $row = substr($position, 0, 1);
             $column = substr($position, 1, 1);
-            $changeAction = new ChangeAction($row, $column, self::USER_VALUE);
+            $changeAction = new ChangeAction($row, $column, ChangeAction::USER_VALUE);
             try {
                 $state->change($changeAction);
             } catch (TicTacToeException $exception) {

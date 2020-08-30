@@ -4,6 +4,10 @@ namespace App\TicTacToeGame;
 
 class ChangeAction
 {
+    public const USER_VALUE = 'X';
+    public const CPU_VALUE = 'O';
+    public const EMPTY_VALUE = '';
+
     /** @var int */
     private $row;
     /** @var int */
