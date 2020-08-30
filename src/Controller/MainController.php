@@ -17,7 +17,7 @@ class MainController extends AbstractController
 {
     const USER_WON_MESSAGE = 'Player won!';
     const CPU_WON_MESSAGE = 'CPU won!';
-    const DRAW_MESSAGE = 'It is a draw!';
+    const DRAW_MESSAGE = "It's a draw!";
     const TITLE = 'TicTacToe Game!';
 
     /**
